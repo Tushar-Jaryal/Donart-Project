@@ -13,11 +13,15 @@
  	include("classes/time.php");
  	include("classes/messages.php");
  	include("classes/group.php");
+ 	include("classes/demo.php");
+
+ 	demo_maybe_reset();
 
  	if(!defined("ROOT")){
 
  		//create root variable
-		$root = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
+		$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== "off") || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === "https") ? "https" : "http";
+		$root = $scheme . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 		$root = trim(str_replace("router.php", "", $root),"/");
 
 		define("ROOT", $root . "/");

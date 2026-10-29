@@ -187,6 +187,7 @@ class Post
 
 	public function get_posts($id,$post_type = "profile")
 	{
+		$id = esc($id);
 
 		$page_number = isset($_GET['page']) ? (int)$_GET['page'] : 1;
   		$page_number = ($page_number < 1) ? 1 : $page_number;
@@ -215,6 +216,7 @@ class Post
 
 	public function get_comments($id)
 	{
+		$id = esc($id);
 
 		$page_number = isset($_GET['page']) ? (int)$_GET['page'] : 1;
   		$page_number = ($page_number < 1) ? 1 : $page_number;
@@ -238,6 +240,7 @@ class Post
 
 	public function get_one_post($postid)
 	{
+		$postid = esc($postid);
 
 		if(!is_numeric($postid)){
 
@@ -261,6 +264,7 @@ class Post
 
 	public function delete_post($postid)
 	{
+		$postid = esc($postid);
 
 		if(!is_numeric($postid)){
 			
@@ -290,19 +294,11 @@ class Post
 		$DB->save($query);
 
 		//delete any images and thumbnails
-		if($one_post['image'] != "" && file_exists($one_post['image']))
-		{
-			unlink($one_post['image']);
-		}
+		if($one_post['image'] != ""){
 
-		if($one_post['image'] != "" && file_exists($one_post['image']. "_post_thumb"))
-		{
-			unlink($one_post['image']. "_post_thumb");
-		}
-
-		if($one_post['image'] != "" && file_exists($one_post['image']. "_cover_thumb"))
-		{
-			unlink($one_post['image']. "_cover_thumb");
+			foreach (array("", "_post_thumb.jpg", "_cover_thumb.jpg", "_profile_thumb.jpg") as $suffix) {
+				safe_unlink($one_post['image'] . $suffix);
+			}
 		}
 
 		//delete all comments
@@ -315,6 +311,7 @@ class Post
 
 	public function i_own_post($postid,$mybook_userid)
 	{
+		$postid = esc($postid);
 
 		if(!is_numeric($postid)){
 			
@@ -349,7 +346,7 @@ class Post
 			$result = $DB->read($sql);
 			if(is_array($result)){
 
-				$likes = json_decode($result[0]['likes'],true);
+				$likes = json_decode((string)$result[0]['likes'],true) ?: array();
 				return $likes;
 			}
 		}
@@ -368,7 +365,7 @@ class Post
 			$result = $DB->read($sql);
 			if(is_array($result)){
 
-				$likes = json_decode($result[0]['likes'],true);
+				$likes = json_decode((string)$result[0]['likes'],true) ?: array();
 
 				$user_ids = array_column($likes, "userid");
  

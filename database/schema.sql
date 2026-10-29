@@ -1,0 +1,146 @@
+-- Donart database schema.
+-- Rebuilt from the queries in classes/*.php (the original dump was never committed).
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS users, posts, likes, messages, notifications, notification_seen,
+	content_i_follow, group_members, group_requests, group_invites;
+
+-- Profiles and groups share this table (type = 'profile' | 'group').
+CREATE TABLE users (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	userid BIGINT UNSIGNED NOT NULL,
+	type VARCHAR(10) NOT NULL DEFAULT 'profile',
+	group_type VARCHAR(10) NOT NULL DEFAULT '',
+	first_name VARCHAR(50) NOT NULL DEFAULT '',
+	last_name VARCHAR(50) NOT NULL DEFAULT '',
+	gender VARCHAR(6) NOT NULL DEFAULT '',
+	email VARCHAR(100) NOT NULL DEFAULT '',
+	password VARCHAR(255) NOT NULL DEFAULT '',
+	url_address VARCHAR(100) NOT NULL DEFAULT '',
+	tag_name VARCHAR(50) NOT NULL DEFAULT '',
+	profile_image VARCHAR(500) NOT NULL DEFAULT '',
+	cover_image VARCHAR(500) NOT NULL DEFAULT '',
+	about TEXT NULL,
+	likes INT NOT NULL DEFAULT 0,
+	owner BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	online INT UNSIGNED NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	UNIQUE KEY (userid),
+	KEY (email),
+	KEY (tag_name),
+	KEY (owner),
+	KEY (type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Posts and comments (comments have parent = postid of the post).
+-- owner is the group's userid for posts made inside a group, else 0.
+CREATE TABLE posts (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	postid BIGINT UNSIGNED NOT NULL,
+	userid BIGINT UNSIGNED NOT NULL,
+	owner BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	parent BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	post TEXT NULL,
+	image VARCHAR(500) NOT NULL DEFAULT '',
+	has_image TINYINT(1) NOT NULL DEFAULT 0,
+	is_profile_image TINYINT(1) NOT NULL DEFAULT 0,
+	is_cover_image TINYINT(1) NOT NULL DEFAULT 0,
+	tags TEXT NULL,
+	likes INT NOT NULL DEFAULT 0,
+	comments INT NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	UNIQUE KEY (postid),
+	KEY (userid),
+	KEY (owner),
+	KEY (parent)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- JSON lists of who liked / follows a piece of content (type = 'post' | 'user').
+CREATE TABLE likes (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	type VARCHAR(10) NOT NULL,
+	contentid BIGINT UNSIGNED NOT NULL,
+	likes TEXT NULL,
+	following TEXT NULL,
+	KEY (type, contentid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE messages (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	msgid VARCHAR(60) NOT NULL,
+	sender BIGINT UNSIGNED NOT NULL,
+	receiver BIGINT UNSIGNED NOT NULL,
+	message TEXT NULL,
+	file VARCHAR(500) NOT NULL DEFAULT '',
+	tags TEXT NULL,
+	seen TINYINT(1) NOT NULL DEFAULT 0,
+	deleted_sender TINYINT(1) NOT NULL DEFAULT 0,
+	deleted_receiver TINYINT(1) NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	KEY (msgid),
+	KEY (sender),
+	KEY (receiver)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE notifications (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	userid BIGINT UNSIGNED NOT NULL,
+	activity VARCHAR(20) NOT NULL DEFAULT '',
+	content_owner BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	contentid BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	content_type VARCHAR(20) NOT NULL DEFAULT '',
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	KEY (userid),
+	KEY (content_owner),
+	KEY (contentid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE notification_seen (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	userid BIGINT UNSIGNED NOT NULL,
+	notification_id INT UNSIGNED NOT NULL,
+	KEY (userid, notification_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE content_i_follow (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	userid BIGINT UNSIGNED NOT NULL,
+	contentid BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	content_type VARCHAR(20) NOT NULL DEFAULT '',
+	disabled TINYINT(1) NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	KEY (userid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE group_members (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	groupid BIGINT UNSIGNED NOT NULL,
+	userid BIGINT UNSIGNED NOT NULL,
+	role VARCHAR(10) NOT NULL DEFAULT 'member',
+	disabled TINYINT(1) NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	KEY (groupid),
+	KEY (userid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE group_requests (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	groupid BIGINT UNSIGNED NOT NULL,
+	userid BIGINT UNSIGNED NOT NULL,
+	disabled TINYINT(1) NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	KEY (groupid),
+	KEY (userid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE group_invites (
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	groupid BIGINT UNSIGNED NOT NULL,
+	userid BIGINT UNSIGNED NOT NULL,
+	inviter BIGINT UNSIGNED NOT NULL,
+	disabled TINYINT(1) NOT NULL DEFAULT 0,
+	date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	KEY (groupid),
+	KEY (userid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

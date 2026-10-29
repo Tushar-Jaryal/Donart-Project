@@ -8,7 +8,7 @@ $_GET['id'] = isset($URL[6]) ? $URL[6] : null;
 
 $_SESSION['mybook_userid'] = isset($_SESSION['mybook_userid']) ? $_SESSION['mybook_userid'] : 0;
 $login = new Login;
-$user_data = $login->check_login($_SESSION['mybook_userid'],false);
+$user_data = $login->check_login($_SESSION['mybook_userid'] ?? 0,false);
 
 //check if not logged in
 if($_SESSION['mybook_userid'] == 0){
@@ -79,7 +79,7 @@ $_GET['type'] = addslashes($_GET['type']);
 					$result = $DB->read($sql);
 					if(is_array($result)){
 
-						$likes = json_decode($result[0]['likes'],true);
+						$likes = json_decode((string)$result[0]['likes'],true) ?: array();
 
 						$user_ids = array_column($likes, "userid");
 		 

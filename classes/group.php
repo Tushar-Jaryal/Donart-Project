@@ -142,7 +142,7 @@ class Group
 		$userid = $data['userid'];
 		$url_address = $data['url_address'];
 		$type = 'group';
-		$group_type = addslashes($data['group_type']);
+		$group_type = strtolower(addslashes($data['group_type']));
 		$date = date("Y-m-d H:i:s");
 		$owner = addslashes($_SESSION['mybook_userid']);
 
@@ -163,6 +163,10 @@ class Group
  		$DB = new Database();
  		$groupid = esc($groupid);
  		$userid = esc($userid);
+
+ 		if(!is_numeric($groupid) || !$this->get_group($groupid) || group_access($userid,$this->get_group($groupid)[0],'member')){
+ 			return;
+ 		}
 
  		$query = "select * from group_requests where userid = '$userid' && groupid = '$groupid' limit 1";
  		$check = $DB->read($query);
@@ -324,7 +328,7 @@ class Group
 			$result = $DB->read($sql);
 			if(is_array($result)){
 
-				$likes = json_decode($result[0]['likes'],true);
+				$likes = json_decode((string)$result[0]['likes'],true) ?: array();
 
 				//get all members of the group
 				$members = $this->get_members($group_id,100000);

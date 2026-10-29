@@ -1,0 +1,5 @@
+.git
+docs
+uploads/*
+!uploads/demo
+uploads/demo/*_thumb.jpg

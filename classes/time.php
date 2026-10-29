@@ -2,7 +2,7 @@
 
 Class Time {
 
-	function get_time($pasttime , $today = 0, $differenceFormat = '%y' ){
+	public static function get_time($pasttime , $today = 0, $differenceFormat = '%y' ){
  
 		$today = date("Y-m-d H:i:s"); 
 	    $datetime1 = date_create($pasttime);

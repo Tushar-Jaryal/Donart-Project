@@ -4,6 +4,7 @@ Class Profile
 {
 	
 	function get_profile($id){
+		$id = esc($id);
 
 		$id = addslashes($id);
 		$DB = new Database();

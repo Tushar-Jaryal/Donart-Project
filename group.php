@@ -5,7 +5,7 @@
 	$login = new Login();
 	$_SESSION['mybook_userid'] = isset($_SESSION['mybook_userid']) ? $_SESSION['mybook_userid'] : 0;
 	
-	$USER = $login->check_login($_SESSION['mybook_userid'],false);
+	$USER = $login->check_login($_SESSION['mybook_userid'] ?? 0,false);
  
  	$group_data = array();
  	
@@ -110,7 +110,7 @@
 			border:none;
 			padding: 4px;
 			font-size: 14px;
-			background-image: url(search.png);
+			background-image: url(<?=ROOT?>search.png);
 			background-repeat: no-repeat;
 			background-position: right;
 
@@ -271,7 +271,7 @@
 					<div style="font-size: 20px;color: black;">
 						<a href="<?=ROOT?>group/<?php echo $group_data['userid'] ?>">
 							<?php echo $group_data['first_name'] ?><br>
-							<span style="font-size: 12px;">[<?php echo $group_data['group_type'] ?> Group]</span>
+							<span style="font-size: 12px;">[<?php echo ucfirst($group_data['group_type']) ?> Group]</span>
  						</a>
  					 
 						<br>

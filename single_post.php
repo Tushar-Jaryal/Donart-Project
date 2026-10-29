@@ -3,7 +3,7 @@
 	include("classes/autoload.php");
  
 	$login = new Login();
-	$user_data = $login->check_login($_SESSION['mybook_userid']);
+	$user_data = $login->check_login($_SESSION['mybook_userid'] ?? 0);
  
  	$USER = $user_data;
  	
@@ -90,7 +90,7 @@
 			border:none;
 			padding: 4px;
 			font-size: 14px;
-			background-image: url(search.png);
+			background-image: url(<?=ROOT?>search.png);
 			background-repeat: no-repeat;
 			background-position: right;
 

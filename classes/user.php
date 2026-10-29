@@ -5,6 +5,7 @@ class User
 
 	public function get_data($id)
 	{
+		$id = esc($id);
 
 		$query = "select * from users where userid = '$id' limit 1";
 		
@@ -24,6 +25,7 @@ class User
 
 	public function get_user($id)
 	{
+		$id = esc($id);
 
 		$query = "select * from users where userid = '$id' limit 1";
 		$DB = new Database();
@@ -41,6 +43,7 @@ class User
 
 	public function get_friends($id)
 	{
+		$id = esc($id);
 
 		$query = "select * from users where userid != '$id' ";
 		$DB = new Database();
@@ -69,7 +72,7 @@ class User
 			$result = $DB->read($sql);
 			if(is_array($result)){
 
-				$following = json_decode($result[0]['following'],true);
+				$following = json_decode((string)$result[0]['following'],true) ?: array();
 				return $following;
 			}
 		}
@@ -91,7 +94,7 @@ class User
 			$result = $DB->read($sql);
 			if(is_array($result)){
 
-				$likes = json_decode($result[0]['following'],true);
+				$likes = json_decode((string)$result[0]['following'],true) ?: array();
 
 				$user_ids = array_column($likes, "userid");
  

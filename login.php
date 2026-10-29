@@ -4,6 +4,14 @@ session_start();
 
 	include("classes/connect.php");
 	include("classes/login.php");
+	include("classes/demo.php");
+
+	demo_maybe_reset();
+
+	if(isset($_GET['demo']) && demo_mode() && demo_login()){
+		header("Location: " . ROOT . "home");
+		die;
+	}
  
 	$email = "";
 	$password = "";
@@ -41,178 +49,62 @@ session_start();
 
 ?>
 
-<html> 
-
+<!doctype html>
+<html lang="en">
 	<head>
-		
-		<title>Log in</title>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Log in | Donart</title>
+		<link rel="icon" href="<?=ROOT?>donartLogo.png">
+		<link rel="stylesheet" href="<?=ROOT?>auth.css">
 	</head>
 
-	<style>
+	<body>
+		<?php demo_banner(); ?>
 
-		#text{
+		<div class="circle xxlarge shade1"></div>
+		<div class="circle xlarge shade2"></div>
+		<div class="circle large shade3"></div>
+		<div class="circle medium shade4"></div>
+		<div class="circle small shade5"></div>
 
-			height: 40px;
-			width: 300px;
-			border-radius: 10px;
-			padding: 4px;
-			font-size: 14px;
-		}
+		<div class="page">
+			<div class="intro">
+				<img src="<?=ROOT?>s1.png" alt="">
+				<h2>Welcome to Donart</h2>
+				<p>A social network for donors, volunteers and people looking for help. Share a cause, join a group, and connect with people who want to make a difference.</p>
+			</div>
 
-		
+			<div class="card">
+				<a class="brand" href="<?=ROOT?>login">
+					<img src="<?=ROOT?>donartLogo.png" alt="">
+					<h1>Donart</h1>
+				</a>
+				<p class="tagline">Log in to continue</p>
 
-		
-		body{
-  background-color: #3399ff;
-}
+				<?php if(!empty($result) && empty($email_err) && empty($password_err)): ?>
+					<div class="alert"><?php echo $result ?></div>
+				<?php endif; ?>
 
-
-.circle{
-  position: absolute;
-  border-radius: 50%;
-  background: white;
-  animation: ripple 15s infinite;
-  box-shadow: 0px 0px 1px 0px #508fb9;
-}
-
-.small{
-  width: 200px;
-  height: 200px;
-  left: 0px;
-  top: 0px;
-}
-
-.medium{
-  width: 400px;
-  height: 400px;
-  left: 100px;
-  top: 100px;
-}
-
-.large{
-  width: 600px;
-  height: 600px;
-  left: -300px;
-  bottom: 300px;
-}
-
-.xlarge{
-  width: 800px;
-  height: 800px;
-  left: -400px;
-  bottom: 200px;
-}
-
-.xxlarge{
-  width: 1000px;
-  height: 1000px;
-  left: -500px;
-  bottom: 100px;
-}
-
-.shade1{
-  opacity: 0.2;
-}
-.shade2{
-  opacity: 0.5;
-}
-
-.shade3{
-  opacity: 0.7;
-}
-
-.shade4{
-  opacity: 0.8;
-}
-
-.shade5{
-  opacity: 0.9;
-}
-
-@keyframes ripple{
-  0%{
-    transform: scale(0.9);
-  }
-  
-  50%{
-    transform: scale(1.2);
-  }
-  
-  100%{
-    transform: scale(0.9);
-  }
-}
-
-.wrapper{
-	margin:auto;
-	top:0px;
-	left:500px;
-	border-radius:0px 400px 0px 400px;
-	width: 360px; 
-    padding: 20px;
-	box-shadow: 0px 0px 20px #36454F;
-	position:absolute;
-	background-image:linear-gradient(to right,#efc4cb,#e77586,#ffc0cb,#fbb8c2);
-	
-}
-
-	</style>
-
-	<body style="font-family: tahoma;color:black;">
-	<div class='ripple-background'>
-  <div class='circle xxlarge shade1'></div>
-  <div class='circle xlarge shade2'></div>
-  <div class='circle large shade3'></div>
-  <div class='circle mediun shade4'></div>
-  
-  <div class='circle small shade5'>
-  <h4 style="font-family:Comic Sans MS;font-weight:bold;position:absolute; top:120px; left:38px;">WELCOME</h4>
-  </div>
-  
-</div><br><br>
-
-
-<div class="wrapper">
-			<center><img src="donartLogo.png" style="position:absolute; display:inline;left:80px; top:8px; height:50px;width:45px;">
-			<h1 style="font-family:Tahoma; display:inline;font-weight:bold; color:black;text-align:left;">Donart</h1>
-			
-			<?php if(!empty($result) && empty($email_err) && empty($password_err))
-			{echo "<div class='alert alert-danger'>".$result."</div>";} ?>
-				<form method="post">
-					
-					<div class="form-group">
-					
-						<input name="email" value="<?php echo $email ?>" class="form-control <?php 
-                        echo (!empty($email_err)) ? 'is-invalid' : ''; ?>" type="text" id="text" placeholder="Email">
-					
-					<span class="invalid-feedback">
-                        <?php echo $email_err; ?>
-                    </span>
+				<form method="post" action="<?=ROOT?>login">
+					<div class="field <?php echo !empty($email_err) ? 'invalid' : '' ?>">
+						<input name="email" value="<?php echo htmlspecialchars($email) ?>" type="email" placeholder="Email" autocomplete="email">
+						<?php if(!empty($email_err)): ?><span class="error"><?php echo $email_err ?></span><?php endif; ?>
 					</div>
-					<div class="form-group">
-					
-						<input name="password" value="<?php echo $password ?>" class="form-control <?php 
-                        echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" type="password" id="text" placeholder="Password">
-					
-					<span class="invalid-feedback">
-                        <?php echo $password_err; ?>
-                    </span>
+					<div class="field <?php echo !empty($password_err) ? 'invalid' : '' ?>">
+						<input name="password" type="password" placeholder="Password" autocomplete="current-password">
+						<?php if(!empty($password_err)): ?><span class="error"><?php echo $password_err ?></span><?php endif; ?>
 					</div>
-					<div class="form-group">
-						<input type="submit" class="btn btn-primary" style="float:right;" value="Log in">
-						
-					</div>
-					<br><br>
-					<p style="color:black;">Don't have an account? <a href="signup.php" style="font-weight:bold;">Sign Up </a> </p>
+					<input type="submit" class="btn btn-primary" value="Log in">
 				</form>
-			</center>	
-			
+
+				<?php if(demo_mode()): ?>
+					<a href="<?=ROOT?>login?demo=1" class="btn btn-demo">Try the demo</a>
+					<p class="hint">or sign in as <b><?=DEMO_EMAIL?></b> / <b><?=DEMO_PASSWORD?></b></p>
+				<?php endif; ?>
+
+				<p class="switch">Don't have an account? <a href="<?=ROOT?>signup">Sign up</a></p>
+			</div>
 		</div>
-<br>
-		<img style="position:absolute;top:0px;height=100px;width:200px;" src="s1.png">
-
 	</body>
-
-
 </html>
