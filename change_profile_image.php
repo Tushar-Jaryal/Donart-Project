@@ -1,15 +1,9 @@
 <?php 
 
-	session_start();
-	
-	include("classes/connect.php");
-	include("classes/login.php");
-	include("classes/user.php");
-	include("classes/post.php");
-	include("classes/image.php");
+	include("classes/autoload.php");
 
 	$login = new Login();
-	$user_data = $login->check_login($_SESSION['mybook_userid']);
+	$user_data = $login->check_login($_SESSION['mybook_userid'] ?? 0);
  
 	//posting starts here
 	if($_SERVER['REQUEST_METHOD'] == "POST")
@@ -52,17 +46,11 @@
 
 					if($change == "cover")
 					{
-						if(file_exists($user_data['cover_image']))
-						{
-							unlink($user_data['cover_image']);
-						}
+						safe_unlink($user_data['cover_image']);
 						$image->resize_image($filename,$filename,1500,1500);
 					}else
 					{
-						if(file_exists($user_data['profile_image']))
-						{
-							unlink($user_data['profile_image']);
-						}
+						safe_unlink($user_data['profile_image']);
 						$image->resize_image($filename,$filename,1500,1500);
 					}
 
@@ -92,7 +80,7 @@
 
 						$post->create_post($userid, $_POST,$filename);
 
-						header(("Location: profile.php"));
+						header("Location: " . ROOT . "profile");
 						die;
 					}
 
@@ -152,7 +140,7 @@
 			border:none;
 			padding: 4px;
 			font-size: 14px;
-			background-image: url(search.png);
+			background-image: url(<?=ROOT?>search.png);
 			background-repeat: no-repeat;
 			background-position: right;
 

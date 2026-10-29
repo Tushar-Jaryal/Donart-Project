@@ -73,16 +73,24 @@ class Signup
 			
 		}
 
+		if(!isset($data['gender']) || !in_array($data['gender'], array("Male","Female"), true)){
+			$this->gender_err = "Please select your gender<br>";
+		}
+
+		foreach (array("first_name","last_name","gender","email") as $key) {
+			$data[$key] = addslashes(trim(isset($data[$key]) ? $data[$key] : ""));
+		}
+
 		$DB = new Database();
 
 		//check tag name
-		$data['tag_name'] = strtolower($data['first_name'] . $data['last_name']);
+		$data['tag_name'] = preg_replace("/[^a-z0-9]/", "", strtolower($data['first_name'] . $data['last_name']));
 
 		$sql = "select id from users where tag_name = '$data[tag_name]' limit 1";
 		$check = $DB->read($sql);
 		while(is_array($check)){
 
-			$data['tag_name'] = strtolower($data['first_name'] . $data['last_name']) . rand(0,9999);
+			$data['tag_name'] = preg_replace("/[^a-z0-9]/", "", strtolower($data['first_name'] . $data['last_name'])) . rand(0,9999);
 			$sql = "select id from users where tag_name = '$data[tag_name]' limit 1";
 			$check = $DB->read($sql);
 		}
@@ -137,7 +145,7 @@ class Signup
 		$date = date("Y-m-d H:i:s");
 		$type = "profile";
 
-		$password = hash("sha1", $password);
+		$password = password_hash($password, PASSWORD_DEFAULT);
 		
 		//create these
 		$url_address = strtolower($first_name) . "." . strtolower($last_name);

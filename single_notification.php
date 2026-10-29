@@ -119,7 +119,7 @@
  								<span style='float:right;font-size:11px;color:#888;display:inline-block;margin-right:10px;'>'".htmlspecialchars(substr($content_row['post'],0,50))."'</span>
 							";
 					}
-				}else{
+				}else if(is_array($content_row)){
 
 					echo $notif_row['content_type'];
 					echo "
@@ -127,7 +127,11 @@
 					";
 				}
 
-				$date = date("jS M Y H:i:s a",strtotime($notif_row['date']));
+				if(!is_array($content_row) && $notif_row['content_type'] == "profile"){
+					echo "profile";
+				}
+
+				$date = date("jS M Y h:i a",strtotime($notif_row['date']));
 				echo "<br>
 
 					<span style='font-size:11px;color:#888;display:inline-block;margin-right:10px;'>$date</span>

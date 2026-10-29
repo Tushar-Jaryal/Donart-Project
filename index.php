@@ -1,5 +1,5 @@
 <?php 
-ini_set("display_errors",1);
+ini_set("display_errors", getenv("APP_DEBUG") ? 1 : 0);
 
 function split_url()
 {
@@ -10,7 +10,8 @@ function split_url()
 }
 
 //create root variable
-$root = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== "off") || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === "https") ? "https" : "http";
+$root = $scheme . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 $root = trim(str_replace("index.php", "", $root),"/");
 
 define("ROOT", $root . "/");
@@ -21,5 +22,6 @@ if(file_exists($URL[0] . ".php")){
 	require($URL[0] . ".php");
 }else{
 
+	http_response_code(404);
 	require("404.php");
 }

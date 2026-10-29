@@ -10,7 +10,7 @@ function pagination_link(){
 
 	//get current url
 	//$url = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
-	$url = ROOT . $_GET['url'];
+	$url = ROOT . (isset($_GET['url']) ? $_GET['url'] : "");
 	$url .= "?";
 
 	$next_page_link = $url;
@@ -92,36 +92,41 @@ function i_own_content($row){
 
 		if($myid == $row['userid']){
 			return true;
-		}else{
+		}
 
-			$Post = new Post();
+		$Post = new Post();
+		$groupid = $row['owner'];
+
+		//comments on my posts
+		if($row['parent'] > 0){
+
 			$one_post = $Post->get_one_post($row['parent']);
+			if(is_array($one_post)){
 
-			if($myid == $one_post['userid']){
-				return true;
+				if($myid == $one_post['userid']){
+					return true;
+				}
+				$groupid = $one_post['owner'];
 			}
+		}
 
-			//groups posts moderator or added admin
+		if($groupid > 0){
+
+			//group admins and moderators
 			$DB = new Database();
-			$groupid = $one_post['owner'];
+			$myid = esc($myid);
+			$groupid = esc($groupid);
 
-			$sql = "select * from group_members where (role = 'admin' || role = 'moderator') && groupid = '$groupid' limit 1";
-			$check = $DB->read($sql);
-
-			if(is_array($check)){
+			$sql = "select * from group_members where (role = 'admin' || role = 'moderator') && groupid = '$groupid' && userid = '$myid' && disabled = 0 limit 1";
+			if(is_array($DB->read($sql))){
 				return true;
 			}
 
 			//group owner
-			$groupid = $row['userid'];
-			$sql = "select * from users where owner = '$myid' && userid = '$groupid'  limit 1";
-			$check = $DB->read($sql);
-
-			if(is_array($check)){
+			$sql = "select * from users where owner = '$myid' && userid = '$groupid' limit 1";
+			if(is_array($DB->read($sql))){
 				return true;
 			}
-
-
 		}
 	}
  
@@ -236,6 +241,16 @@ function content_i_follow($userid,$row)
 	values ('$userid','$date','$contentid','$content_type')";
 	$DB = new Database();
 	$DB->save($query);
+}
+
+//delete an uploaded file, but never the bundled demo images
+function safe_unlink($path){
+
+	if($path == "" || strpos($path, "uploads/demo/") === 0 || !file_exists($path)){
+		return;
+	}
+
+	unlink($path);
 }
 
 function esc($value)
@@ -482,7 +497,7 @@ function group_access($userid,$group_data,$access){
 
 	if($access == 'member'){
 	
-		$query = "select userid from group_members where groupid = '$groupid' && userid = '$userid' && (role = 'member' || role = 'admin' || role = 'moderator') limit 1";
+		$query = "select userid from group_members where groupid = '$groupid' && userid = '$userid' && (role = 'member' || role = 'admin' || role = 'moderator') && disabled = 0 limit 1";
 		$data = $DB->read($query);
 		if(is_array($data)){
 			return true;
@@ -490,7 +505,7 @@ function group_access($userid,$group_data,$access){
 		return false;
 	}else
 	if($access == 'moderator'){
-		$query = "select userid from group_members where groupid = '$groupid' && userid = '$userid' && (role = 'admin' || role = 'moderator') limit 1";
+		$query = "select userid from group_members where groupid = '$groupid' && userid = '$userid' && (role = 'admin' || role = 'moderator') && disabled = 0 limit 1";
 		$data = $DB->read($query);
 		if(is_array($data)){
 			return true;
@@ -498,7 +513,7 @@ function group_access($userid,$group_data,$access){
 		return false;
 	}else
 	if($access == 'admin'){
-		$query = "select userid from group_members where groupid = '$groupid' && userid = '$userid' && (role = 'admin') limit 1";
+		$query = "select userid from group_members where groupid = '$groupid' && userid = '$userid' && (role = 'admin') && disabled = 0 limit 1";
 		$data = $DB->read($query);
 		if(is_array($data)){
 			return true;

@@ -133,7 +133,7 @@
 					$result = $DB->read($sql);
 					if(is_array($result)){
 
-						$likes = json_decode($result[0]['likes'],true);
+						$likes = json_decode((string)$result[0]['likes'],true) ?: array();
 
 						$user_ids = array_column($likes, "userid");
 		 

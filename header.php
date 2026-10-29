@@ -18,10 +18,11 @@
 	}
 ?>
 
+<?php demo_banner(); ?>
 <div id="blue_bar">
 	<form method="get" action="<?=ROOT?>search">
 		<div style=" width: 800px;margin:auto;font-size: 15px; padding-bottom:2px;">
-		<img src="donartLogo.png" style="position:absolute; display:inline;left:238px; top:19px; height:50px;width:45px;">
+		<img src="<?=ROOT?>donartLogo.png" style="height:44px;width:40px;vertical-align:bottom;margin-right:4px;">
 			<a href="<?=ROOT?>home" style="color:#EDEAE5; text-decoration:none; font-weight:bold;"><h1 style="color:#000000;display:inline; font-family:tahoma;">Donart</h1></a> 
 			&nbsp &nbsp <input type="text" id="search_box" name="find" placeholder="Search for people" />
 

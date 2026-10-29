@@ -5,7 +5,7 @@
 	$login = new Login();
 	$_SESSION['mybook_userid'] = isset($_SESSION['mybook_userid']) ? $_SESSION['mybook_userid'] : 0;
 	
-	$user_data = $login->check_login($_SESSION['mybook_userid'],false);
+	$user_data = $login->check_login($_SESSION['mybook_userid'] ?? 0,false);
  
  	$USER = $user_data;
  	
@@ -131,7 +131,7 @@
 			border:none;
 			padding: 4px;
 			font-size: 14px;
-			background-image: url(search.png);
+			background-image: url(<?=ROOT?>search.png);
 			background-repeat: no-repeat;
 			background-position: right;
 

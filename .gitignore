@@ -1,0 +1,7 @@
+# demo-mode reset markers
+uploads/.demo_reset*
+# visitor uploads and generated thumbnails
+uploads/*
+!uploads/demo/
+uploads/demo/*_thumb.jpg
+.env

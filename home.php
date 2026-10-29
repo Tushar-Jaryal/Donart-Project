@@ -4,7 +4,7 @@
  
 
 	$login = new Login();
-	$user_data = $login->check_login($_SESSION['mybook_userid']);
+	$user_data = $login->check_login($_SESSION['mybook_userid'] ?? 0);
  
  	$USER = $user_data;
  	
@@ -70,7 +70,7 @@
 			border:1px solid #B2BEB5;
 			padding: 4px;
 			font-size: 14px;
-			background-image: url(search.png);
+			background-image: url(<?=ROOT?>search.png);
 			background-repeat: no-repeat;
 			background-position: right;
 
@@ -228,13 +228,13 @@
 
  							$followers = $user_class->get_following($_SESSION['mybook_userid'],"user");
 
- 							$follower_ids = false;
+ 							//always include my own posts, even before following anyone
+ 							$follower_ids = array($_SESSION['mybook_userid']);
  							if(is_array($followers)){
 
- 								$follower_ids = array_column($followers, "userid");
- 								$follower_ids = implode("','", $follower_ids);
-
+ 								$follower_ids = array_merge($follower_ids, array_column($followers, "userid"));
  							}
+ 							$follower_ids = implode("','", array_map("esc", $follower_ids));
 
  							if($follower_ids){
  								$myuserid = $_SESSION['mybook_userid'];

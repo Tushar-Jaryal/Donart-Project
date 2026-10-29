@@ -1,0 +1,41 @@
+# Runs Donart with a MariaDB database pre-loaded with demo data.
+#   docker compose up --build    then open http://localhost:8080
+services:
+  app:
+    build: .
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: donart_db
+      DB_USER: donart
+      DB_PASSWORD: ${DB_PASSWORD:-donart}
+      DEMO_MODE: ${DEMO_MODE:-1}
+      DEMO_RESET_HOURS: ${DEMO_RESET_HOURS:-24}
+      APP_DEBUG: ${APP_DEBUG:-0}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_DATABASE: donart_db
+      MARIADB_USER: donart
+      MARIADB_PASSWORD: ${DB_PASSWORD:-donart}
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+      TZ: UTC
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  db_data:

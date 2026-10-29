@@ -3,7 +3,7 @@
 include("classes/autoload.php");
 
 	$login = new Login();
-	$user_data = $login->check_login($_SESSION['mybook_userid']);
+	$user_data = $login->check_login($_SESSION['mybook_userid'] ?? 0);
 
  
 if(isset($_SERVER['HTTP_REFERER'])){

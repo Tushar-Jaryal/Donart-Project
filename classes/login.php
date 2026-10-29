@@ -4,6 +4,8 @@ class Login
 {
 
 	private $login_err ="";
+	private $email_err ="";
+	private $password_err ="";
  
 	public function evaluate($data)
 	{
@@ -22,7 +24,7 @@ class Login
 			$row = $result[0];
 			if(empty($email)){ $this->email_err = "Please enter email";}
 			if(empty($password)){ $this->password_err = "Please enter password";}
-			if($this->hash_text($password) == $row['password'])
+			if(password_verify($data['password'], $row['password']) || hash_equals($row['password'], $this->hash_text($data['password'])))
 			{
 
 				//create session data

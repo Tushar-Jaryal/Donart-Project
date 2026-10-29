@@ -17,7 +17,7 @@
 		<br>
 		<?php echo $FRIEND_ROW['first_name'] ?>
 		<br><br>
-		<span>'<?php echo $FRIEND_ROW['group_type'] ?>'</span>
+		<span>'<?php echo ucfirst($FRIEND_ROW['group_type']) ?>'</span>
 		
  	</a>
 </div>

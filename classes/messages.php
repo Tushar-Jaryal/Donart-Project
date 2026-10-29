@@ -129,6 +129,7 @@ Class Messages
 	}
 
 	public function read_one_thread($msgid){
+		$msgid = esc($msgid);
 
 		$msgid = esc($msgid);
 		$DB = new Database();
@@ -145,6 +146,7 @@ Class Messages
 	
 
 	public function read_one($id){
+		$id = esc($id);
 
 		$id = (int)$id;
 
@@ -164,6 +166,7 @@ Class Messages
 	}
 
 	public function delete_one($id){
+		$id = esc($id);
 
 		$id = (int)$id;
 
@@ -191,6 +194,7 @@ Class Messages
 	}
 
 	public function delete_one_thread($msgid){
+		$msgid = esc($msgid);
 
 		$id = esc($msgid);
 
